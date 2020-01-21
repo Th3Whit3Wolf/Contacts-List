@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shops Contacts</title>
+    <link rel="stylesheet" href="https://unpkg.com/bulma@0.8.0/css/bulma.min.css" />
+</head>
+<style>
+    html {
+        background: #041221;
+    }
+    /* Card start*/
+    .card {
+        overflow:hidden
+    }
+    .card.large {
+        height: 100%;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: initial;
+        border-radius: 24px;
+    }
+    /* Card end */
+    .media-content {
+        overflow: hidden;
+    }
+    .title.no-padding {
+        margin-bottom: 0 !important;
+    }
+    .card-image {
+        background-color: #a7c031;
+    }
+    .has-input {
+        text-align: center;
+        margin-left: 30%;
+        width: 40%;
+    }
+    #filterInput {
+        margin: 1em 0em;
+        text-align: center;
+        background-color: #ddd;
+    }
+    #jsCards {
+        margin: 1em;
+    }
+</style>
+<body>
+    <div id="jsCards">
+    </div>
+</body>
+<script>
+    const jsCards = document.getElementById('jsCards');
+    const svgGirl = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-80/newgirl-01.svg";
+    const svgBoy = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-80/newboy-02.svg";
+
+    var contacts = {
+        "contacts":[
+            {
+                "name": "Contact 1",
+                "desc": "Contact Description",
+                "dsn" : "555-1234",
+                "uk"  : "+44163-555-1234"
+            },
+            {
+                "name": "Contact 2",
+                "desc": "Contact Description",
+                "dsn" : "555-4321",
+                "uk"  : "+44163-555-4321"
+            },
+        ]
+    };
+    function jsCardMaker(contacts, bool) {
+        cardHeight = 363; //document.querySelectorAll('.card.large')[0].clientHeight;
+        windowWidth = document.body.clientWidth;
+        rowCount = Math.round(windowWidth / cardHeight);
+        let output = `<div class="row columns">
+            <div class="has-input">
+                <input type="text" id="filterInput" placeholder="Search Contacts..." class="input is-rounded">
+            </div>`;
+        for (i = 0; i < Object.keys( contacts.contacts ).length; i++) {
+            if (i % rowCount === 0) {
+                output += '</div>';
+                output += '<div class="row columns">';
+            }
+            switch (rowCount) {
+                case rowCount % 12 === 0:
+                    col = "column is-1";
+                    break;
+                case rowCount % 6 === 0:
+                    col = "column is-2";
+                    break;
+                case rowCount % 5 === 0:
+                    col = "column is-one-fifth";
+                    break;
+                case rowCount % 4 === 0:
+                    col = "column is-one-fourth";
+                    break;
+                case rowCount % 3 === 0:
+                    col = "column is-one-third";
+                    break;
+                case rowCount % 2 === 0:
+                    col = "column is-one-half";
+                    break;
+                case (rowCount > 12):
+                    col = "column is-1";
+                    break;
+                    case (rowCount >= 7 && rowCount <= 11):
+                    col = "column is-2";
+                    break;
+                default:
+                    col = "column is-one-half";
+            }
+            var svg = (i % 2 === 0) ? svgBoy : svgGirl;
+            output += `<div class="${col}">
+                <div class="card large">
+                    <div class="card-image has-text-centered">
+                        <figure class="image is-128x128 is-inline-block">
+                            <img src="${svg}" alt="Image">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="media">
+                            <div class="media-content has-text-centered">
+                                <p class="title is-4">${contacts.contacts[i].name}</p>
+                                <p><span class="title is-6">${contacts.contacts[i].desc}</span></p>
+                            </div>
+                        </div>
+                        <div class="content">
+                            <p><b>DSN:</b> ${contacts.contacts[i].dsn}</p>
+                            <p><b>UK:</b>  ${contacts.contacts[i].uk}</p>
+                            <!--<p><b>BLD:</b> ${contacts.contacts[i].bld}</p>-->
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+        output += '</div>';
+        jsCards.innerHTML = output;
+        
+    }
+
+    function filterNames(){
+        //console.log("Type")
+        let filterValue = filterInput.value.toUpperCase();
+
+        // Get names all cards
+        var cards = document.querySelectorAll('.card.large');
+
+        // Loop through cards
+        for(let i = 0; i < cards.length; i++) {
+            let cardName = cards[i].querySelector('.title.is-4');
+            let cardDesc = cards[i].querySelector('.title.is-6');
+
+            // If matched
+            if(cardName.innerHTML.toUpperCase().indexOf(filterValue) > -1 || cardDesc.innerHTML.toUpperCase().indexOf(filterValue) > -1){
+                cards[i].style.display = '';
+            } else {
+                cards[i].style.display = 'none';
+            }
+        }
+    }
+
+    function init() {
+        jsCardMaker(contacts);
+        var filterInput = document.getElementById('filterInput');
+        filterInput.addEventListener('keyup', filterNames);
+        window.addEventListener("resize", function(){
+            jsCardMaker(contacts);
+            location.reload(true);
+            var filterInput = document.getElementById('filterInput');
+            filterInput.addEventListener('keyup', filterNames);
+        });
+    }
+    init();
+</script>
+</html>
